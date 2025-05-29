@@ -1,0 +1,1203 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={demo},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{demo}
+\author{}
+\date{\vspace{-2.5em}2025-04-11}
+
+\begin{document}
+\maketitle
+
+A marginal approach to generalized linear models For
+clustered/correlated data, the difficulties in interpreting the
+parameter estimates from generalized linear mixed effects models with
+non-identity links suggests that other approaches are needed. One of the
+most popular of these is generalized estimating equations (GEE). GEE
+extends generalized linear models to correlated data but differs from
+mixed effects models in that GEE explicitly fits a marginal model to
+data. An abstract formulation of the generalized linear model The
+probability distributions used in generalized linear models are related
+because they are all members of what's called the exponential family of
+distributions. The density (mass) function of any member of the
+exponential family takes the following form.
+
+In Generalized Estimating Equations (GEE), the working correlation
+structure refers to the assumed or approximated correlation pattern
+among repeated measurements within the same subject (or observational
+unit) that is specified in the estimating equations. It is termed
+``working'' because the consistency of the regression coefficient
+estimates is preserved in large samples even if the working correlation
+structure does not match the true underlying correlation. However, if
+the working structure more closely approximates the true correlation,
+the estimation becomes more efficient.
+
+Common types of working correlation structures include:
+\#\#\#``independence'': the observations within the groups are
+uncorrelated. \#\#\#``exchangeable'': each pair of observations in a
+group has the same correlation. \#\#\#``unstructured'': each pair of
+observations in a group is allowed to have a different correlation.
+\#\#\#``AR-M'': this is used to fit an autoregressive structure. To
+obtain a specific autoregressive structure requires the additional
+argument Mv. For example corstr=``AR-M'', Mv=1 yields an AR(1)
+structure, while corstr=``AR-M'', Mv=2 yields an AR(2) structure.
+\#\#\#``non\_stat\_M\_dep'': stands for nonstationary M-dependent and
+generates a banded correlation matrix. It also requires the Mv argument
+to denote the number of nonzero off-diagonal bands that are to be
+estimated. Like ``AR-M'', ``non\_stat\_M\_dep'' assumes there is a
+natural order to the data. Like ``unstructured'', ``non\_stat\_M\_dep''
+allows the entries within the each nonzero band to be different. As an
+example corstr=``non\_stat\_M\_dep'', Mv=1 would correspond to the
+following correlation matrix for a group of size 4. Here α, β, and γ are
+parameters that need to be estimated. Common Methods for Selecting the
+GEE Correlation Structure
+
+There are three commonly recommended approaches for selecting a
+correlation structure in GEE, as outlined by Hardin \& Hilbe (2003):
+
+Structure Based on Data Collection Mechanism: Choose a correlation
+structure that reflects how the data were collected. For example, in
+longitudinal or temporal data, a structure accounting for time
+dependence such as AR(1) is often appropriate.
+
+Minimizing Pan's QIC: Select the structure that minimizes Pan's
+Quasi-likelihood under the Independence model Criterion (QIC), which
+generalizes the Akaike Information Criterion (AIC) for use in GEE
+models. QIC is applicable only when comparing models that are identical
+in all aspects except for their working correlation structures. Note:
+This is distinct from QAIC as described in Burnham \& Anderson (2002).
+
+Variance Approximation Consistency: Choose the structure for which the
+sandwich (robust) estimate of the variance most closely approximates the
+naïve variance estimate.
+
+On QIC and the Issue of Misspecification
+
+If past covariate information has additional effects on the current
+response but is not sufficiently captured in the model, using
+non-diagonal correlation structures (such as CS or AR-1) may introduce
+bias. We will further examine how this potential misspecification
+affects model selection results.
+
+Concept of the Marginal Model
+
+The marginal model---also referred to as a population-averaged
+model---describes the average relationship between response and
+covariates across the entire population. Its main features include:
+
+No subject-specific random effects: The marginal model focuses solely on
+the population-average effect. It models how the mean of the response
+changes with covariates x, without accounting for individual-specific
+random effects (e.g., subject-level heterogeneity).
+
+Conclusion
+
+A major advantage of the GEE approach is that, even in the presence of
+intra-subject correlation (e.g., repeated measurements), one can obtain
+consistent estimates of the regression parameters β by specifying a
+working correlation structure. Importantly, GEE targets the marginal
+model, which characterizes the average covariate-response relationship
+at the population level, without modeling individual random effects.
+
+In GEE, the model is typically specified only on the current covariates
+x\_ij rather than attempting to incorporate historical information or
+individual-specific effects. This allows for robust estimation of
+population-level effects, even when repeated measures exhibit
+correlation.
+
+Assumption (2) and Its Implications
+
+This article emphasizes the importance of Assumption (2) when using GEE.
+Specifically, it requires that the expectation of the response at time
+t, given the current covariates x\_it, should be consistent with the
+expectation conditional on all time-point covariates.
+
+When Assumption (2) Holds or Is Approximately Satisfied: If model
+specification or covariate selection sufficiently incorporates
+historical information---thus satisfying or approximately satisfying
+Assumption (2)---then using a compound symmetry (CS) or AR(1) working
+correlation structure is justified. These structures leverage the
+correlation in repeated measures and improve estimation efficiency.
+Theoretically, this leads to smaller variance in estimates and thus
+greater efficiency.
+
+When Assumption (2) Fails: If past covariates affect current outcomes
+but are not adequately modeled, using non-independent working structures
+such as CS or AR(1) may introduce bias. In such cases, it is preferable
+to use an independence structure, which ensures unbiased parameter
+estimates despite sacrificing some efficiency. The use of sandwich
+(robust) variance estimation guarantees the consistency of estimates
+even when correlations are ignored.
+
+Motivation
+
+In longitudinal or clustered data, observations within a subject or
+cluster are typically correlated. Assuming independence may preserve
+consistency but often results in less efficient estimates.
+
+The GEE framework addresses this by specifying a working correlation
+matrix to model intra-subject dependence and constructs the estimating
+equations based on both the mean and variance structures.
+
+If the chosen working correlation structure closely matches the true
+underlying correlation, one can achieve more precise (lower variance)
+estimates. However, when misspecified, although estimates remain
+consistent under regularity conditions (Pepe and Anderson, 1994), they
+may suffer from reduced efficiency or even bias.
+
+Simulation Study Design
+
+Model 1 and Model 2: Both share a marginal model of E(Y\textbar x) = βx,
+but due to their dependence on past values of Y, using a non-independent
+working correlation matrix (e.g., CS or AR(1)) may introduce bias. In
+contrast, the independence structure tends to yield more stable
+estimates.
+
+Model 3: The marginal model is still E(Y\textbar x) = βx, but the true
+data-generating correlation is compound symmetric. Hence, the CS
+structure is expected to be more efficient.
+
+To compare methods, we will perform repeated simulations (e.g., 1000
+iterations) and compute the bias, variance, and mean squared error (MSE)
+of β estimates under each correlation structure.
+
+Simulation Procedure
+
+We will proceed with several correlation structure selection methods:
+
+First, simulate data from the three models and fit GEE models using
+different working correlation structures. Calculate MSE (from empirical
+variance) to identify the best-fitting structure.
+
+Next, apply the Prediction Mean Squared Error (PMSE) approach to select
+the correlation structure.
+
+Finally, use Pan's QIC criterion to compare and select the optimal
+working correlation matrix.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Simulation}
+\FunctionTok{library}\NormalTok{(geepack)}
+
+\DocumentationTok{\#\#\# The data generated for simulation}
+
+\DocumentationTok{\#\# Model 1: Y\_it = α * Y\_i,t{-}1 + β * x\_it + ε\_it, }
+\DocumentationTok{\#\# Init Y\_i0 = 0，and x\_it \textasciitilde{} N(0,1), ε\_it \textasciitilde{} N(0,1)}
+\NormalTok{simulate\_model1 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(N, T, alpha, beta) \{}
+\NormalTok{  sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+\NormalTok{    Y\_prev }\OtherTok{\textless{}{-}} \DecValTok{0}  \CommentTok{\# }
+    \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{T) \{}
+\NormalTok{      x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      eps }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      Y\_curr }\OtherTok{\textless{}{-}}\NormalTok{ alpha }\SpecialCharTok{*}\NormalTok{ Y\_prev }\SpecialCharTok{+}\NormalTok{ beta }\SpecialCharTok{*}\NormalTok{ x }\SpecialCharTok{+}\NormalTok{ eps}
+\NormalTok{      sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(sim\_data, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =}\NormalTok{ i, }\AttributeTok{time =}\NormalTok{ t, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{Y =}\NormalTok{ Y\_curr))}
+\NormalTok{      Y\_prev }\OtherTok{\textless{}{-}}\NormalTok{ Y\_curr}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sim\_data)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\# Model 2: Y\_it = Y\_i,t{-}1 * (β * x\_it) + ε\_it, }
+\DocumentationTok{\#\# Init Y\_i0 = 1，Set β = 1，x\_it \textasciitilde{} N(1,1)，ε\_it \textasciitilde{} N(0,1)}
+\NormalTok{simulate\_model2 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(N, T, beta) \{}
+\NormalTok{  sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+\NormalTok{    Y\_prev }\OtherTok{\textless{}{-}} \DecValTok{1}  \CommentTok{\# Init 1}
+    \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{T) \{}
+\NormalTok{      x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{1}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      eps }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      Y\_curr }\OtherTok{\textless{}{-}}\NormalTok{ Y\_prev }\SpecialCharTok{*}\NormalTok{ (beta }\SpecialCharTok{*}\NormalTok{ x) }\SpecialCharTok{+}\NormalTok{ eps}
+\NormalTok{      sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(sim\_data, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =}\NormalTok{ i, }\AttributeTok{time =}\NormalTok{ t, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{Y =}\NormalTok{ Y\_curr))}
+\NormalTok{      Y\_prev }\OtherTok{\textless{}{-}}\NormalTok{ Y\_curr}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sim\_data)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\# Model 3: Y\_it = b\_i + β * x\_it + ε\_it,}
+\DocumentationTok{\#\# b\_i \textasciitilde{} N(0,1)，x\_it \textasciitilde{} N(0,1)，ε\_it \textasciitilde{} N(0,1)}
+\NormalTok{simulate\_model3 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(N, T, beta) \{}
+\NormalTok{  sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+  \CommentTok{\# interception is random }
+\NormalTok{  b }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(N, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+    \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{T) \{}
+\NormalTok{      x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      eps }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      Y }\OtherTok{\textless{}{-}}\NormalTok{ b[i] }\SpecialCharTok{+}\NormalTok{ beta }\SpecialCharTok{*}\NormalTok{ x }\SpecialCharTok{+}\NormalTok{ eps}
+\NormalTok{      sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(sim\_data, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =}\NormalTok{ i, }\AttributeTok{time =}\NormalTok{ t, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{Y =}\NormalTok{ Y))}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sim\_data)}
+\NormalTok{\}}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{N }\OtherTok{\textless{}{-}} \DecValTok{100}  
+\NormalTok{T }\OtherTok{\textless{}{-}} \DecValTok{5}    \CommentTok{\#  5 observations of each individual}
+\NormalTok{alpha }\OtherTok{\textless{}{-}} \FloatTok{0.5}  \CommentTok{\# Model 1 }
+\NormalTok{beta\_val }\OtherTok{\textless{}{-}} \DecValTok{1}  \CommentTok{\# β }
+
+\CommentTok{\# Generate the data for each models}
+\NormalTok{data1 }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_model1}\NormalTok{(N, T, alpha, beta\_val)}
+\NormalTok{data2 }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_model2}\NormalTok{(N, T, beta\_val)}
+\NormalTok{data3 }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_model3}\NormalTok{(N, T, beta\_val)}
+
+\DocumentationTok{\#\#\# The GEE fitted models matches marginal models E(Y|x)=}
+\CommentTok{\# independence, exchangeable(CS, ar1(AR(1))}
+
+\CommentTok{\#  Model 1 }
+\NormalTok{gee\_ind1 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data1, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"independence"}\NormalTok{) }\CommentTok{\#(from geepack) for fitting GEE models.}
+\NormalTok{gee\_cs1  }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data1, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"exchangeable"}\NormalTok{)}
+\NormalTok{gee\_ar1\_1 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data1, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"ar1"}\NormalTok{)}
+
+\CommentTok{\#  Model 2 }
+\NormalTok{gee\_ind2 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data2, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"independence"}\NormalTok{)}
+\NormalTok{gee\_cs2  }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data2, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"exchangeable"}\NormalTok{)}
+\NormalTok{gee\_ar1\_2 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data2, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"ar1"}\NormalTok{)}
+
+\CommentTok{\#  Model 3 }
+\NormalTok{gee\_ind3 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data3, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"independence"}\NormalTok{)}
+\NormalTok{gee\_cs3  }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data3, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"exchangeable"}\NormalTok{)}
+\NormalTok{gee\_ar1\_3 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data3, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"ar1"}\NormalTok{)}
+
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Model 1 {-} GEE Estimates:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Model 1 - GEE Estimates:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_ind1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data1, id = id, 
+##     corstr = "independence")
+## 
+##  Coefficients:
+##             Estimate  Std.err    Wald Pr(>|W|)    
+## (Intercept) -0.02289  0.07093   0.104    0.747    
+## x            0.94694  0.06001 248.991   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = independence 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)    1.337 0.08114
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#The for the fitted result}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_cs1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data1, id = id, 
+##     corstr = "exchangeable")
+## 
+##  Coefficients:
+##             Estimate Std.err   Wald Pr(>|W|)    
+## (Intercept)  -0.0152  0.0726   0.04     0.83    
+## x             0.8481  0.0568 222.78   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = exchangeable 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     1.35  0.0823
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha    0.234   0.038
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_ar1\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data1, id = id, 
+##     corstr = "ar1")
+## 
+##  Coefficients:
+##             Estimate Std.err   Wald Pr(>|W|)    
+## (Intercept)  -0.0113  0.0718   0.02     0.87    
+## x             0.7820  0.0513 232.18   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = ar1 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     1.36  0.0851
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha    0.439  0.0428
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Model 2 {-} GEE Estimates:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Model 2 - GEE Estimates:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_ind2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data2, id = id, 
+##     corstr = "independence")
+## 
+##  Coefficients:
+##             Estimate Std.err  Wald Pr(>|W|)    
+## (Intercept)    0.474   0.121 15.38  8.8e-05 ***
+## x              0.631   0.211  8.98   0.0027 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = independence 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     9.84    2.86
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_cs2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data2, id = id, 
+##     corstr = "exchangeable")
+## 
+##  Coefficients:
+##             Estimate Std.err  Wald Pr(>|W|)    
+## (Intercept)    0.693   0.174 15.79  7.1e-05 ***
+## x              0.411   0.134  9.49   0.0021 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = exchangeable 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     9.88    2.89
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha    0.454  0.0341
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_ar1\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data2, id = id, 
+##     corstr = "ar1")
+## 
+##  Coefficients:
+##             Estimate Std.err Wald Pr(>|W|)    
+## (Intercept)    0.763   0.203 14.1  0.00018 ***
+## x              0.363   0.110 10.9  0.00096 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = ar1 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)      9.9     2.9
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha    0.647  0.0303
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Model 3 {-} GEE Estimates:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Model 3 - GEE Estimates:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_ind3))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data3, id = id, 
+##     corstr = "independence")
+## 
+##  Coefficients:
+##             Estimate Std.err   Wald Pr(>|W|)    
+## (Intercept)  -0.1459  0.0948   2.37     0.12    
+## x             0.9793  0.0657 222.02   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = independence 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     1.69   0.137
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_cs3))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data3, id = id, 
+##     corstr = "exchangeable")
+## 
+##  Coefficients:
+##             Estimate Std.err   Wald Pr(>|W|)    
+## (Intercept)   -0.146   0.095   2.36     0.12    
+## x              1.014   0.056 328.44   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = exchangeable 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     1.69   0.138
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha    0.417  0.0451
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{summary}\NormalTok{(gee\_ar1\_3))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## geeglm(formula = Y ~ x, family = gaussian, data = data3, id = id, 
+##     corstr = "ar1")
+## 
+##  Coefficients:
+##             Estimate Std.err   Wald Pr(>|W|)    
+## (Intercept)  -0.1738  0.0948   3.36    0.067 .  
+## x             1.0334  0.0663 242.93   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation structure = ar1 
+## Estimated Scale Parameters:
+## 
+##             Estimate Std.err
+## (Intercept)     1.69   0.139
+##   Link = identity 
+## 
+## Estimated Correlation Parameters:
+##       Estimate Std.err
+## alpha    0.624  0.0401
+## Number of clusters:   100  Maximum cluster size: 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{compute\_MSE }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(true\_beta, est) \{}
+  \FunctionTok{return}\NormalTok{((est }\SpecialCharTok{{-}}\NormalTok{ true\_beta)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{mse\_ind1 }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ind1)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{mse\_cs1  }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_cs1)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{mse\_ar1\_1 }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ar1\_1)[}\StringTok{"x"}\NormalTok{])}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Model 1: MSE for beta estimates:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Model 1: MSE for beta estimates:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Independence:"}\NormalTok{, mse\_ind1, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence: 0.00282
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Exchangeable:"}\NormalTok{, mse\_cs1, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Exchangeable: 0.0231
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"AR1:"}\NormalTok{, mse\_ar1\_1, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## AR1: 0.0475
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(geepack)}
+
+\DocumentationTok{\#\# Model 1: Y\_it = α * Y\_i,t{-}1 + β * x\_it + ε\_it}
+\NormalTok{simulate\_model1 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(N, T, alpha, beta) \{}
+\NormalTok{  sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+\NormalTok{    Y\_prev }\OtherTok{\textless{}{-}} \DecValTok{0}  \CommentTok{\# Init}
+    \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{T) \{}
+\NormalTok{      x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      eps }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      Y\_curr }\OtherTok{\textless{}{-}}\NormalTok{ alpha }\SpecialCharTok{*}\NormalTok{ Y\_prev }\SpecialCharTok{+}\NormalTok{ beta }\SpecialCharTok{*}\NormalTok{ x }\SpecialCharTok{+}\NormalTok{ eps}
+\NormalTok{      sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(sim\_data, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =}\NormalTok{ i, }\AttributeTok{time =}\NormalTok{ t, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{Y =}\NormalTok{ Y\_curr))}
+\NormalTok{      Y\_prev }\OtherTok{\textless{}{-}}\NormalTok{ Y\_curr}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sim\_data)}
+\NormalTok{\}}
+
+\CommentTok{\#Calculate the Mean Square Error}
+\NormalTok{compute\_MSE }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(true\_beta, est) \{}
+  \FunctionTok{return}\NormalTok{((est }\SpecialCharTok{{-}}\NormalTok{ true\_beta)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\# Replications(Model 1）}
+\NormalTok{simulate\_experiment }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(}\AttributeTok{R =} \DecValTok{100}\NormalTok{, }\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{T =} \DecValTok{5}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{, }\AttributeTok{beta\_val =} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{  mse\_results }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\AttributeTok{nrow =}\NormalTok{ R, }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{)}
+  \FunctionTok{colnames}\NormalTok{(mse\_results) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Independence"}\NormalTok{, }\StringTok{"Exchangeable"}\NormalTok{, }\StringTok{"AR1"}\NormalTok{)}
+  
+  \CommentTok{\# Data frame for counting the minimized MSE}
+\NormalTok{  best\_count }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\AttributeTok{Independence =} \DecValTok{0}\NormalTok{, }\AttributeTok{Exchangeable =} \DecValTok{0}\NormalTok{, }\AttributeTok{AR1 =} \DecValTok{0}\NormalTok{)}
+  
+  \ControlFlowTok{for}\NormalTok{ (r }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{R) \{}
+
+\NormalTok{    data }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_model1}\NormalTok{(N, T, alpha, beta\_val)}
+    
+    \CommentTok{\# The same as the one reduplication simulation in previous}
+\NormalTok{    gee\_ind }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"independence"}\NormalTok{)}
+\NormalTok{    gee\_cs  }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"exchangeable"}\NormalTok{)}
+\NormalTok{    gee\_ar1 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"ar1"}\NormalTok{)}
+    
+    \CommentTok{\# Calculate the three β estimated 的 MSE}
+\NormalTok{    mse\_ind }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ind)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{    mse\_cs  }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_cs)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{    mse\_ar1 }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ar1)[}\StringTok{"x"}\NormalTok{])}
+    
+\NormalTok{    mse\_results[r, ] }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(mse\_ind, mse\_cs, mse\_ar1)}
+    
+    \CommentTok{\# Record the structure has the minimal MSE}
+\NormalTok{    current\_mse }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(mse\_ind, mse\_cs, mse\_ar1)}
+\NormalTok{    best\_index }\OtherTok{\textless{}{-}} \FunctionTok{which.min}\NormalTok{(current\_mse)}
+    \ControlFlowTok{if}\NormalTok{ (best\_index }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"Independence"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"Independence"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (best\_index }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"Exchangeable"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"Exchangeable"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (best\_index }\SpecialCharTok{==} \DecValTok{3}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"AR1"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"AR1"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Mean MSE and MSE(VAR)}
+\NormalTok{  mse\_means }\OtherTok{\textless{}{-}} \FunctionTok{colMeans}\NormalTok{(mse\_results)}
+\NormalTok{  mse\_vars  }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(mse\_results, }\DecValTok{2}\NormalTok{, var)}
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\AttributeTok{mse\_means =}\NormalTok{ mse\_means, }\AttributeTok{mse\_vars =}\NormalTok{ mse\_vars, }\AttributeTok{best\_count =}\NormalTok{ best\_count, }\AttributeTok{raw\_results =}\NormalTok{ mse\_results))}
+\NormalTok{\}}
+
+\CommentTok{\# 100 reduplicates, 5 Observations, set beta as 1.0}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{results }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_experiment}\NormalTok{(}\AttributeTok{R =} \DecValTok{100}\NormalTok{, }\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{T =} \DecValTok{5}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{, }\AttributeTok{beta\_val =} \DecValTok{1}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"{-}{-}{-}{-}{-} Model 1 Simulation Results {-}{-}{-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ----- Model 1 Simulation Results -----
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Mean MSE:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Mean MSE:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results}\SpecialCharTok{$}\NormalTok{mse\_means)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##      0.00242      0.01219      0.03393
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{MSE MSE(VAR):}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## MSE MSE(VAR):
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results}\SpecialCharTok{$}\NormalTok{mse\_vars)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##     7.61e-06     1.10e-04     2.68e-04
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{ Frequency of the working correlation matrix selected:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Frequency of the working correlation matrix selected:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results}\SpecialCharTok{$}\NormalTok{best\_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##           86           14            0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(geepack)}
+
+\DocumentationTok{\#\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\DocumentationTok{\#\# Model 2:}
+\DocumentationTok{\#\# Y\_it = Y\_i,t{-}1 * (β * x\_it) + ε\_it}
+\DocumentationTok{\#\# Init Y\_i0 = 1, set β = 1 ，x\_it \textasciitilde{} N(1,1)，ε\_it \textasciitilde{} N(0,1)}
+\DocumentationTok{\#\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{simulate\_model2 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(N, T, beta) \{}
+\NormalTok{  sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+\NormalTok{    Y\_prev }\OtherTok{\textless{}{-}} \DecValTok{1}  \CommentTok{\# Init 1}
+    \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{T) \{}
+\NormalTok{      x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{1}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      eps }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      Y\_curr }\OtherTok{\textless{}{-}}\NormalTok{ Y\_prev }\SpecialCharTok{*}\NormalTok{ (beta }\SpecialCharTok{*}\NormalTok{ x) }\SpecialCharTok{+}\NormalTok{ eps}
+\NormalTok{      sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(sim\_data, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =}\NormalTok{ i, }\AttributeTok{time =}\NormalTok{ t, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{Y =}\NormalTok{ Y\_curr))}
+\NormalTok{      Y\_prev }\OtherTok{\textless{}{-}}\NormalTok{ Y\_curr}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sim\_data)}
+\NormalTok{\}}
+
+
+\NormalTok{compute\_MSE }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(true\_beta, est) \{}
+  \FunctionTok{return}\NormalTok{((est }\SpecialCharTok{{-}}\NormalTok{ true\_beta)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\# Simulate of Model 2, R times replications}
+\NormalTok{simulate\_experiment\_model2 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(}\AttributeTok{R =} \DecValTok{100}\NormalTok{, }\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{T =} \DecValTok{5}\NormalTok{, }\AttributeTok{beta\_val =} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{  mse\_results }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\AttributeTok{nrow =}\NormalTok{ R, }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{)}
+  \FunctionTok{colnames}\NormalTok{(mse\_results) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Independence"}\NormalTok{, }\StringTok{"Exchangeable"}\NormalTok{, }\StringTok{"AR1"}\NormalTok{)}
+  
+  \CommentTok{\# Get the minimal MSE}
+\NormalTok{  best\_count }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\AttributeTok{Independence =} \DecValTok{0}\NormalTok{, }\AttributeTok{Exchangeable =} \DecValTok{0}\NormalTok{, }\AttributeTok{AR1 =} \DecValTok{0}\NormalTok{)}
+  
+  \ControlFlowTok{for}\NormalTok{ (r }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{R) \{}
+    \CommentTok{\# 1. Generate the simulation data of (Model 2)}
+\NormalTok{    data }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_model2}\NormalTok{(N, T, beta\_val)}
+    
+    \CommentTok{\# 2. fit GEE models, respectively}
+\NormalTok{    gee\_ind }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"independence"}\NormalTok{)}
+\NormalTok{    gee\_cs  }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"exchangeable"}\NormalTok{)}
+\NormalTok{    gee\_ar1 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"ar1"}\NormalTok{)}
+    
+    \CommentTok{\# 3. Calculate the MSE }
+\NormalTok{    mse\_ind }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ind)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{    mse\_cs  }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_cs)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{    mse\_ar1 }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ar1)[}\StringTok{"x"}\NormalTok{])}
+    
+\NormalTok{    mse\_vec }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(mse\_ind, mse\_cs, mse\_ar1)}
+\NormalTok{    mse\_results[r, ] }\OtherTok{\textless{}{-}}\NormalTok{ mse\_vec}
+    
+    \CommentTok{\# Record the structure has the minimal MSE}
+\NormalTok{    best\_idx }\OtherTok{\textless{}{-}} \FunctionTok{which.min}\NormalTok{(mse\_vec)}
+    \ControlFlowTok{if}\NormalTok{ (best\_idx }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"Independence"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"Independence"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (best\_idx }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"Exchangeable"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"Exchangeable"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{      best\_count[}\StringTok{"AR1"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"AR1"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+  
+\NormalTok{  mse\_means }\OtherTok{\textless{}{-}} \FunctionTok{colMeans}\NormalTok{(mse\_results)}
+\NormalTok{  mse\_vars }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(mse\_results, }\DecValTok{2}\NormalTok{, var)}
+  
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}
+    \AttributeTok{mse\_means =}\NormalTok{ mse\_means,}
+    \AttributeTok{mse\_vars =}\NormalTok{ mse\_vars,}
+    \AttributeTok{best\_count =}\NormalTok{ best\_count,}
+    \AttributeTok{raw\_results =}\NormalTok{ mse\_results}
+\NormalTok{  ))}
+\NormalTok{\}}
+
+\DocumentationTok{\#\# 100 reduplicates, 5 Observations, set beta as 1.0}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{results\_model2 }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_experiment\_model2}\NormalTok{(}\AttributeTok{R =} \DecValTok{100}\NormalTok{, }\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{T =} \DecValTok{5}\NormalTok{, }\AttributeTok{beta\_val =} \DecValTok{1}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"{-}{-}{-}{-}{-} Model 2 Simulation Results {-}{-}{-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ----- Model 2 Simulation Results -----
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Mean MSE:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Mean MSE:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results\_model2}\SpecialCharTok{$}\NormalTok{mse\_means)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##        0.116        0.193        0.199
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{MSE MSE(VAR):}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## MSE MSE(VAR):
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results\_model2}\SpecialCharTok{$}\NormalTok{mse\_vars)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##       0.0435       0.0312       0.0252
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{ Frequency of the working correlation matrix selected:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Frequency of the working correlation matrix selected:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results\_model2}\SpecialCharTok{$}\NormalTok{best\_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##           71           18           11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(geepack)}
+
+\DocumentationTok{\#\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\DocumentationTok{\#\# Model 3:}
+\DocumentationTok{\#\# Y\_it = b\_i + β * x\_it + ε\_it}
+\DocumentationTok{\#\# b\_i \textasciitilde{} N(0,1), x\_it \textasciitilde{} N(0,1), ε\_it \textasciitilde{} N(0,1)}
+\DocumentationTok{\#\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{simulate\_model3 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(N, T, beta) \{}
+\NormalTok{  sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+  
+\NormalTok{  b }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(N, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+    \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{T) \{}
+\NormalTok{      x }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      eps }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{)}
+\NormalTok{      Y }\OtherTok{\textless{}{-}}\NormalTok{ b[i] }\SpecialCharTok{+}\NormalTok{ beta }\SpecialCharTok{*}\NormalTok{ x }\SpecialCharTok{+}\NormalTok{ eps}
+\NormalTok{      sim\_data }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(sim\_data, }\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =}\NormalTok{ i, }\AttributeTok{time =}\NormalTok{ t, }\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{Y =}\NormalTok{ Y))}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(sim\_data)}
+\NormalTok{\}}
+
+\NormalTok{compute\_MSE }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(true\_beta, est) \{}
+\NormalTok{  (est }\SpecialCharTok{{-}}\NormalTok{ true\_beta)}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{\}}
+
+\NormalTok{simulate\_experiment\_model3 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(}\AttributeTok{R =} \DecValTok{100}\NormalTok{, }\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{T =} \DecValTok{5}\NormalTok{, }\AttributeTok{beta\_val =} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{  mse\_results }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\AttributeTok{nrow =}\NormalTok{ R, }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{)}
+  \FunctionTok{colnames}\NormalTok{(mse\_results) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Independence"}\NormalTok{, }\StringTok{"Exchangeable"}\NormalTok{, }\StringTok{"AR1"}\NormalTok{)}
+\NormalTok{  best\_count }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\AttributeTok{Independence =} \DecValTok{0}\NormalTok{, }\AttributeTok{Exchangeable =} \DecValTok{0}\NormalTok{, }\AttributeTok{AR1 =} \DecValTok{0}\NormalTok{)}
+  
+  \ControlFlowTok{for}\NormalTok{ (r }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{R) \{}
+\NormalTok{    data }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_model3}\NormalTok{(N, T, beta\_val)}
+
+\NormalTok{    gee\_ind }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"independence"}\NormalTok{)}
+\NormalTok{    gee\_cs  }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"exchangeable"}\NormalTok{)}
+\NormalTok{    gee\_ar1 }\OtherTok{\textless{}{-}} \FunctionTok{geeglm}\NormalTok{(Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x, }\AttributeTok{id =}\NormalTok{ id, }\AttributeTok{data =}\NormalTok{ data, }\AttributeTok{family =}\NormalTok{ gaussian, }\AttributeTok{corstr =} \StringTok{"ar1"}\NormalTok{)}
+
+\NormalTok{    mse\_ind }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ind)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{    mse\_cs  }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_cs)[}\StringTok{"x"}\NormalTok{])}
+\NormalTok{    mse\_ar1 }\OtherTok{\textless{}{-}} \FunctionTok{compute\_MSE}\NormalTok{(beta\_val, }\FunctionTok{coef}\NormalTok{(gee\_ar1)[}\StringTok{"x"}\NormalTok{])}
+    
+\NormalTok{    mse\_vec }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(mse\_ind, mse\_cs, mse\_ar1)}
+\NormalTok{    mse\_results[r, ] }\OtherTok{\textless{}{-}}\NormalTok{ mse\_vec}
+    
+\NormalTok{    best\_idx }\OtherTok{\textless{}{-}} \FunctionTok{which.min}\NormalTok{(mse\_vec)}
+    \ControlFlowTok{if}\NormalTok{ (best\_idx }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"Independence"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"Independence"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (best\_idx }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) \{}
+\NormalTok{      best\_count[}\StringTok{"Exchangeable"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"Exchangeable"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{      best\_count[}\StringTok{"AR1"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ best\_count[}\StringTok{"AR1"}\NormalTok{] }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+\NormalTok{  mse\_means }\OtherTok{\textless{}{-}} \FunctionTok{colMeans}\NormalTok{(mse\_results)}
+\NormalTok{  mse\_vars  }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(mse\_results, }\DecValTok{2}\NormalTok{, var)}
+  
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}
+    \AttributeTok{mse\_means =}\NormalTok{ mse\_means,}
+    \AttributeTok{mse\_vars =}\NormalTok{ mse\_vars,}
+    \AttributeTok{best\_count =}\NormalTok{ best\_count,}
+    \AttributeTok{raw\_results =}\NormalTok{ mse\_results}
+\NormalTok{  ))}
+\NormalTok{\}}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{results\_model3 }\OtherTok{\textless{}{-}} \FunctionTok{simulate\_experiment\_model3}\NormalTok{(}\AttributeTok{R =} \DecValTok{100}\NormalTok{, }\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{T =} \DecValTok{5}\NormalTok{, }\AttributeTok{beta\_val =} \DecValTok{1}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"{-}{-}{-}{-}{-} Model 3 Simulation Results {-}{-}{-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## ----- Model 3 Simulation Results -----
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Mean MSE:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Mean MSE:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results\_model3}\SpecialCharTok{$}\NormalTok{mse\_means)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##      0.00364      0.00227      0.00260
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{MSE MSE(VAR):}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## MSE MSE(VAR):
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results\_model3}\SpecialCharTok{$}\NormalTok{mse\_vars)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##     1.66e-05     6.94e-06     8.86e-06
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{ Frequency of the working correlation matrix selected }\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Frequency of the working correlation matrix selected
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(results\_model3}\SpecialCharTok{$}\NormalTok{best\_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Independence Exchangeable          AR1 
+##           22           40           38
+\end{verbatim}
+
+The previously mentioned PMSE (Prediction Mean Squared Error) method is
+based on the following idea:
+
+Objective: To select a working correlation structure that minimizes the
+average prediction error when forecasting new data.
+
+Approach: Use resampling techniques such as bootstrap or
+cross-validation to fit GEE models under different correlation
+structures (e.g., Independence, Compound Symmetry {[}CS{]}, AR-1). For
+each fitted model, calculate the prediction error on validation data.
+The structure that yields the smallest average prediction error is
+preferred.
+
+Conclusion: The working correlation structure with the smallest PMSE is
+typically chosen, as it suggests better alignment with the data's
+underlying correlation pattern and improved predictive performance.
+
+Why Use PMSE for Selection?
+
+Traditional Approach: Many practitioners rely on criteria like QIC
+(Quasi-likelihood under the Independence model Criterion) or subjective
+judgment and model comparison to select a suitable working correlation
+structure.
+
+PMSE Perspective: Pan and Connett (2002) proposed evaluating model
+performance based on its ability to predict future observations---such
+as using leave-one-out cross-validation or other validation schemes.
+This is a common and intuitive strategy in statistics. If a working
+correlation structure captures the true within-subject dependency more
+effectively, it tends to produce lower prediction errors.
+
+We will then apply BOOT, BOOT2, and BOOTCV procedures to conduct
+simulations on the three models.
+
+\end{document}

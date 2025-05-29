@@ -1,0 +1,555 @@
+---
+title: "demo"
+output:
+  html_document: default
+  pdf_document: default
+date: "2025-04-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A marginal approach to generalized linear models
+For clustered/correlated data, the difficulties in interpreting the parameter estimates from generalized linear mixed effects models with non-identity links suggests that other approaches are needed. One of the most popular of these is generalized estimating equations (GEE). GEE extends generalized linear models to correlated data but differs from mixed effects models in that GEE explicitly fits a marginal model to data.
+An abstract formulation of the generalized linear model
+The probability distributions used in generalized linear models are related because they are all members of what's called the exponential family of distributions. The density (mass) function of any member of the exponential family takes the following form.
+
+
+In Generalized Estimating Equations (GEE), the working correlation structure refers to the assumed or approximated correlation pattern among repeated measurements within the same subject (or observational unit) that is specified in the estimating equations. It is termed "working" because the consistency of the regression coefficient estimates is preserved in large samples even if the working correlation structure does not match the true underlying correlation. However, if the working structure more closely approximates the true correlation, the estimation becomes more efficient.
+
+Common types of working correlation structures include:
+###"independence": the observations within the groups are uncorrelated.
+###"exchangeable": each pair of observations in a group has the same correlation.
+###"unstructured": each pair of observations in a group is allowed to have a different correlation.
+###"AR-M": this is used to fit an autoregressive structure. To obtain a specific autoregressive structure requires the additional argument Mv. For example corstr="AR-M", Mv=1 yields an AR(1) structure, while corstr="AR-M", Mv=2 yields an AR(2) structure.
+###"non_stat_M_dep": stands for nonstationary M-dependent and generates a banded correlation matrix. It also requires the Mv argument to denote the number of nonzero off-diagonal bands that are to be estimated. Like "AR-M", "non_stat_M_dep" assumes there is a natural order to the data. Like "unstructured", "non_stat_M_dep" allows the entries within the each nonzero band to be different. As an example corstr="non_stat_M_dep", Mv=1 would correspond to the following correlation matrix for a group of size 4. Here α, β, and γ are parameters that need to be estimated.
+Common Methods for Selecting the GEE Correlation Structure
+
+There are three commonly recommended approaches for selecting a correlation structure in GEE, as outlined by Hardin & Hilbe (2003):
+
+Structure Based on Data Collection Mechanism:
+Choose a correlation structure that reflects how the data were collected. For example, in longitudinal or temporal data, a structure accounting for time dependence such as AR(1) is often appropriate.
+
+Minimizing Pan’s QIC:
+Select the structure that minimizes Pan’s Quasi-likelihood under the Independence model Criterion (QIC), which generalizes the Akaike Information Criterion (AIC) for use in GEE models. QIC is applicable only when comparing models that are identical in all aspects except for their working correlation structures. Note: This is distinct from QAIC as described in Burnham & Anderson (2002).
+
+Variance Approximation Consistency:
+Choose the structure for which the sandwich (robust) estimate of the variance most closely approximates the naïve variance estimate.
+
+On QIC and the Issue of Misspecification
+
+If past covariate information has additional effects on the current response but is not sufficiently captured in the model, using non-diagonal correlation structures (such as CS or AR-1) may introduce bias. We will further examine how this potential misspecification affects model selection results.
+
+Concept of the Marginal Model
+
+The marginal model—also referred to as a population-averaged model—describes the average relationship between response and covariates across the entire population. Its main features include:
+
+No subject-specific random effects:
+The marginal model focuses solely on the population-average effect. It models how the mean of the response changes with covariates x, without accounting for individual-specific random effects (e.g., subject-level heterogeneity).
+
+Conclusion
+
+A major advantage of the GEE approach is that, even in the presence of intra-subject correlation (e.g., repeated measurements), one can obtain consistent estimates of the regression parameters β by specifying a working correlation structure. Importantly, GEE targets the marginal model, which characterizes the average covariate-response relationship at the population level, without modeling individual random effects.
+
+In GEE, the model is typically specified only on the current covariates x_ij rather than attempting to incorporate historical information or individual-specific effects. This allows for robust estimation of population-level effects, even when repeated measures exhibit correlation.
+
+Assumption (2) and Its Implications
+
+This article emphasizes the importance of Assumption (2) when using GEE. Specifically, it requires that the expectation of the response at time t, given the current covariates x_it, should be consistent with the expectation conditional on all time-point covariates.
+
+When Assumption (2) Holds or Is Approximately Satisfied:
+If model specification or covariate selection sufficiently incorporates historical information—thus satisfying or approximately satisfying Assumption (2)—then using a compound symmetry (CS) or AR(1) working correlation structure is justified. These structures leverage the correlation in repeated measures and improve estimation efficiency. Theoretically, this leads to smaller variance in estimates and thus greater efficiency.
+
+When Assumption (2) Fails:
+If past covariates affect current outcomes but are not adequately modeled, using non-independent working structures such as CS or AR(1) may introduce bias. In such cases, it is preferable to use an independence structure, which ensures unbiased parameter estimates despite sacrificing some efficiency. The use of sandwich (robust) variance estimation guarantees the consistency of estimates even when correlations are ignored.
+
+Motivation
+
+In longitudinal or clustered data, observations within a subject or cluster are typically correlated. Assuming independence may preserve consistency but often results in less efficient estimates.
+
+The GEE framework addresses this by specifying a working correlation matrix to model intra-subject dependence and constructs the estimating equations based on both the mean and variance structures.
+
+If the chosen working correlation structure closely matches the true underlying correlation, one can achieve more precise (lower variance) estimates. However, when misspecified, although estimates remain consistent under regularity conditions (Pepe and Anderson, 1994), they may suffer from reduced efficiency or even bias.
+
+Simulation Study Design
+
+Model 1 and Model 2:
+Both share a marginal model of E(Y|x) = βx, but due to their dependence on past values of Y, using a non-independent working correlation matrix (e.g., CS or AR(1)) may introduce bias. In contrast, the independence structure tends to yield more stable estimates.
+
+Model 3:
+The marginal model is still E(Y|x) = βx, but the true data-generating correlation is compound symmetric. Hence, the CS structure is expected to be more efficient.
+
+To compare methods, we will perform repeated simulations (e.g., 1000 iterations) and compute the bias, variance, and mean squared error (MSE) of β estimates under each correlation structure.
+
+Simulation Procedure
+
+We will proceed with several correlation structure selection methods:
+
+First, simulate data from the three models and fit GEE models using different working correlation structures. Calculate MSE (from empirical variance) to identify the best-fitting structure.
+
+Next, apply the Prediction Mean Squared Error (PMSE) approach to select the correlation structure.
+
+Finally, use Pan's QIC criterion to compare and select the optimal working correlation matrix.
+
+
+
+```{r}
+# Simulation
+library(geepack)
+
+### The data generated for simulation
+
+## Model 1: Y_it = α * Y_i,t-1 + β * x_it + ε_it, 
+## Init Y_i0 = 0，and x_it ~ N(0,1), ε_it ~ N(0,1)
+simulate_model1 <- function(N, T, alpha, beta) {
+  sim_data <- data.frame()
+  for (i in 1:N) {
+    Y_prev <- 0  # 
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 0, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y_curr <- alpha * Y_prev + beta * x + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y_curr))
+      Y_prev <- Y_curr
+    }
+  }
+  return(sim_data)
+}
+
+## Model 2: Y_it = Y_i,t-1 * (β * x_it) + ε_it, 
+## Init Y_i0 = 1，Set β = 1，x_it ~ N(1,1)，ε_it ~ N(0,1)
+simulate_model2 <- function(N, T, beta) {
+  sim_data <- data.frame()
+  for (i in 1:N) {
+    Y_prev <- 1  # Init 1
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 1, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y_curr <- Y_prev * (beta * x) + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y_curr))
+      Y_prev <- Y_curr
+    }
+  }
+  return(sim_data)
+}
+
+## Model 3: Y_it = b_i + β * x_it + ε_it,
+## b_i ~ N(0,1)，x_it ~ N(0,1)，ε_it ~ N(0,1)
+simulate_model3 <- function(N, T, beta) {
+  sim_data <- data.frame()
+  # interception is random 
+  b <- rnorm(N, mean = 0, sd = 1)
+  for (i in 1:N) {
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 0, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y <- b[i] + beta * x + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y))
+    }
+  }
+  return(sim_data)
+}
+
+set.seed(123)
+N <- 100  
+T <- 5    #  5 observations of each individual
+alpha <- 0.5  # Model 1 
+beta_val <- 1  # β 
+
+# Generate the data for each models
+data1 <- simulate_model1(N, T, alpha, beta_val)
+data2 <- simulate_model2(N, T, beta_val)
+data3 <- simulate_model3(N, T, beta_val)
+
+### The GEE fitted models matches marginal models E(Y|x)=
+# independence, exchangeable(CS, ar1(AR(1))
+
+#  Model 1 
+gee_ind1 <- geeglm(Y ~ x, id = id, data = data1, family = gaussian, corstr = "independence") #(from geepack) for fitting GEE models.
+gee_cs1  <- geeglm(Y ~ x, id = id, data = data1, family = gaussian, corstr = "exchangeable")
+gee_ar1_1 <- geeglm(Y ~ x, id = id, data = data1, family = gaussian, corstr = "ar1")
+
+#  Model 2 
+gee_ind2 <- geeglm(Y ~ x, id = id, data = data2, family = gaussian, corstr = "independence")
+gee_cs2  <- geeglm(Y ~ x, id = id, data = data2, family = gaussian, corstr = "exchangeable")
+gee_ar1_2 <- geeglm(Y ~ x, id = id, data = data2, family = gaussian, corstr = "ar1")
+
+#  Model 3 
+gee_ind3 <- geeglm(Y ~ x, id = id, data = data3, family = gaussian, corstr = "independence")
+gee_cs3  <- geeglm(Y ~ x, id = id, data = data3, family = gaussian, corstr = "exchangeable")
+gee_ar1_3 <- geeglm(Y ~ x, id = id, data = data3, family = gaussian, corstr = "ar1")
+
+
+cat("Model 1 - GEE Estimates:\n")
+print(summary(gee_ind1))
+```
+
+
+```{r}
+#The for the fitted result
+print(summary(gee_cs1))
+```
+
+
+```{r}
+print(summary(gee_ar1_1))
+```
+
+
+```{r}
+cat("\nModel 2 - GEE Estimates:\n")
+print(summary(gee_ind2))
+```
+
+
+```{r}
+print(summary(gee_cs2))
+```
+
+
+```{r}
+print(summary(gee_ar1_2))
+```
+
+
+```{r}
+cat("\nModel 3 - GEE Estimates:\n")
+
+print(summary(gee_ind3))
+```
+
+
+```{r}
+print(summary(gee_cs3))
+```
+
+
+```{r}
+print(summary(gee_ar1_3))
+compute_MSE <- function(true_beta, est) {
+  return((est - true_beta)^2)
+}
+mse_ind1 <- compute_MSE(beta_val, coef(gee_ind1)["x"])
+mse_cs1  <- compute_MSE(beta_val, coef(gee_cs1)["x"])
+mse_ar1_1 <- compute_MSE(beta_val, coef(gee_ar1_1)["x"])
+cat("\nModel 1: MSE for beta estimates:\n")
+cat("Independence:", mse_ind1, "\n")
+cat("Exchangeable:", mse_cs1, "\n")
+cat("AR1:", mse_ar1_1, "\n")
+
+```
+
+
+
+
+```{r}
+library(geepack)
+
+## Model 1: Y_it = α * Y_i,t-1 + β * x_it + ε_it
+simulate_model1 <- function(N, T, alpha, beta) {
+  sim_data <- data.frame()
+  for (i in 1:N) {
+    Y_prev <- 0  # Init
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 0, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y_curr <- alpha * Y_prev + beta * x + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y_curr))
+      Y_prev <- Y_curr
+    }
+  }
+  return(sim_data)
+}
+
+#Calculate the Mean Square Error
+compute_MSE <- function(true_beta, est) {
+  return((est - true_beta)^2)
+}
+
+## Replications(Model 1）
+simulate_experiment <- function(R = 100, N = 100, T = 5, alpha = 0.5, beta_val = 1) {
+  mse_results <- matrix(NA, nrow = R, ncol = 3)
+  colnames(mse_results) <- c("Independence", "Exchangeable", "AR1")
+  
+  # Data frame for counting the minimized MSE
+  best_count <- c(Independence = 0, Exchangeable = 0, AR1 = 0)
+  
+  for (r in 1:R) {
+
+    data <- simulate_model1(N, T, alpha, beta_val)
+    
+    # The same as the one reduplication simulation in previous
+    gee_ind <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "independence")
+    gee_cs  <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "exchangeable")
+    gee_ar1 <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "ar1")
+    
+    # Calculate the three β estimated 的 MSE
+    mse_ind <- compute_MSE(beta_val, coef(gee_ind)["x"])
+    mse_cs  <- compute_MSE(beta_val, coef(gee_cs)["x"])
+    mse_ar1 <- compute_MSE(beta_val, coef(gee_ar1)["x"])
+    
+    mse_results[r, ] <- c(mse_ind, mse_cs, mse_ar1)
+    
+    # Record the structure has the minimal MSE
+    current_mse <- c(mse_ind, mse_cs, mse_ar1)
+    best_index <- which.min(current_mse)
+    if (best_index == 1) {
+      best_count["Independence"] <- best_count["Independence"] + 1
+    } else if (best_index == 2) {
+      best_count["Exchangeable"] <- best_count["Exchangeable"] + 1
+    } else if (best_index == 3) {
+      best_count["AR1"] <- best_count["AR1"] + 1
+    }
+  }
+  
+  # Mean MSE and MSE(VAR)
+  mse_means <- colMeans(mse_results)
+  mse_vars  <- apply(mse_results, 2, var)
+  
+  return(list(mse_means = mse_means, mse_vars = mse_vars, best_count = best_count, raw_results = mse_results))
+}
+
+# 100 reduplicates, 5 Observations, set beta as 1.0
+set.seed(123)
+results <- simulate_experiment(R = 100, N = 100, T = 5, alpha = 0.5, beta_val = 1)
+
+cat("----- Model 1 Simulation Results -----\n")
+
+cat("\nMean MSE:\n")
+print(results$mse_means)
+cat("\nMSE MSE(VAR):\n")
+print(results$mse_vars)
+
+cat("\n Frequency of the working correlation matrix selected:\n")
+print(results$best_count)
+
+```
+
+```{r}
+library(geepack)
+
+## ---------------------------
+## Model 2:
+## Y_it = Y_i,t-1 * (β * x_it) + ε_it
+## Init Y_i0 = 1, set β = 1 ，x_it ~ N(1,1)，ε_it ~ N(0,1)
+## ---------------------------
+
+simulate_model2 <- function(N, T, beta) {
+  sim_data <- data.frame()
+  for (i in 1:N) {
+    Y_prev <- 1  # Init 1
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 1, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y_curr <- Y_prev * (beta * x) + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y_curr))
+      Y_prev <- Y_curr
+    }
+  }
+  return(sim_data)
+}
+
+
+compute_MSE <- function(true_beta, est) {
+  return((est - true_beta)^2)
+}
+
+## Simulate of Model 2, R times replications
+simulate_experiment_model2 <- function(R = 100, N = 100, T = 5, beta_val = 1) {
+  mse_results <- matrix(NA, nrow = R, ncol = 3)
+  colnames(mse_results) <- c("Independence", "Exchangeable", "AR1")
+  
+  # Get the minimal MSE
+  best_count <- c(Independence = 0, Exchangeable = 0, AR1 = 0)
+  
+  for (r in 1:R) {
+    # 1. Generate the simulation data of (Model 2)
+    data <- simulate_model2(N, T, beta_val)
+    
+    # 2. fit GEE models, respectively
+    gee_ind <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "independence")
+    gee_cs  <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "exchangeable")
+    gee_ar1 <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "ar1")
+    
+    # 3. Calculate the MSE 
+    mse_ind <- compute_MSE(beta_val, coef(gee_ind)["x"])
+    mse_cs  <- compute_MSE(beta_val, coef(gee_cs)["x"])
+    mse_ar1 <- compute_MSE(beta_val, coef(gee_ar1)["x"])
+    
+    mse_vec <- c(mse_ind, mse_cs, mse_ar1)
+    mse_results[r, ] <- mse_vec
+    
+    # Record the structure has the minimal MSE
+    best_idx <- which.min(mse_vec)
+    if (best_idx == 1) {
+      best_count["Independence"] <- best_count["Independence"] + 1
+    } else if (best_idx == 2) {
+      best_count["Exchangeable"] <- best_count["Exchangeable"] + 1
+    } else {
+      best_count["AR1"] <- best_count["AR1"] + 1
+    }
+  }
+  
+  
+  mse_means <- colMeans(mse_results)
+  mse_vars <- apply(mse_results, 2, var)
+  
+  
+  return(list(
+    mse_means = mse_means,
+    mse_vars = mse_vars,
+    best_count = best_count,
+    raw_results = mse_results
+  ))
+}
+
+## 100 reduplicates, 5 Observations, set beta as 1.0
+set.seed(123)
+results_model2 <- simulate_experiment_model2(R = 100, N = 100, T = 5, beta_val = 1)
+
+cat("----- Model 2 Simulation Results -----\n")
+
+cat("\nMean MSE:\n")
+print(results_model2$mse_means)
+
+cat("\nMSE MSE(VAR):\n")
+print(results_model2$mse_vars)
+
+cat("\n Frequency of the working correlation matrix selected:\n")
+print(results_model2$best_count)
+
+```
+
+
+```{r}
+library(geepack)
+
+## ---------------------------
+## Model 3:
+## Y_it = b_i + β * x_it + ε_it
+## b_i ~ N(0,1), x_it ~ N(0,1), ε_it ~ N(0,1)
+## ---------------------------
+
+simulate_model3 <- function(N, T, beta) {
+  sim_data <- data.frame()
+  
+  b <- rnorm(N, mean = 0, sd = 1)
+  for (i in 1:N) {
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 0, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y <- b[i] + beta * x + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y))
+    }
+  }
+  return(sim_data)
+}
+
+compute_MSE <- function(true_beta, est) {
+  (est - true_beta)^2
+}
+
+simulate_experiment_model3 <- function(R = 100, N = 100, T = 5, beta_val = 1) {
+  mse_results <- matrix(NA, nrow = R, ncol = 3)
+  colnames(mse_results) <- c("Independence", "Exchangeable", "AR1")
+  best_count <- c(Independence = 0, Exchangeable = 0, AR1 = 0)
+  
+  for (r in 1:R) {
+    data <- simulate_model3(N, T, beta_val)
+
+    gee_ind <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "independence")
+    gee_cs  <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "exchangeable")
+    gee_ar1 <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = "ar1")
+
+    mse_ind <- compute_MSE(beta_val, coef(gee_ind)["x"])
+    mse_cs  <- compute_MSE(beta_val, coef(gee_cs)["x"])
+    mse_ar1 <- compute_MSE(beta_val, coef(gee_ar1)["x"])
+    
+    mse_vec <- c(mse_ind, mse_cs, mse_ar1)
+    mse_results[r, ] <- mse_vec
+    
+    best_idx <- which.min(mse_vec)
+    if (best_idx == 1) {
+      best_count["Independence"] <- best_count["Independence"] + 1
+    } else if (best_idx == 2) {
+      best_count["Exchangeable"] <- best_count["Exchangeable"] + 1
+    } else {
+      best_count["AR1"] <- best_count["AR1"] + 1
+    }
+  }
+  
+  mse_means <- colMeans(mse_results)
+  mse_vars  <- apply(mse_results, 2, var)
+  
+  return(list(
+    mse_means = mse_means,
+    mse_vars = mse_vars,
+    best_count = best_count,
+    raw_results = mse_results
+  ))
+}
+
+set.seed(123)
+results_model3 <- simulate_experiment_model3(R = 100, N = 100, T = 5, beta_val = 1)
+
+cat("----- Model 3 Simulation Results -----\n")
+
+cat("\nMean MSE:\n")
+print(results_model3$mse_means)
+
+cat("\nMSE MSE(VAR):\n")
+print(results_model3$mse_vars)
+
+cat("\n Frequency of the working correlation matrix selected \n")
+print(results_model3$best_count)
+
+```
+The previously mentioned PMSE (Prediction Mean Squared Error) method is based on the following idea:
+
+Objective:
+To select a working correlation structure that minimizes the average prediction error when forecasting new data.
+
+Approach:
+Use resampling techniques such as bootstrap or cross-validation to fit GEE models under different correlation structures (e.g., Independence, Compound Symmetry [CS], AR-1). For each fitted model, calculate the prediction error on validation data. The structure that yields the smallest average prediction error is preferred.
+
+Conclusion:
+The working correlation structure with the smallest PMSE is typically chosen, as it suggests better alignment with the data’s underlying correlation pattern and improved predictive performance.
+
+Why Use PMSE for Selection?
+
+Traditional Approach:
+Many practitioners rely on criteria like QIC (Quasi-likelihood under the Independence model Criterion) or subjective judgment and model comparison to select a suitable working correlation structure.
+
+PMSE Perspective:
+Pan and Connett (2002) proposed evaluating model performance based on its ability to predict future observations—such as using leave-one-out cross-validation or other validation schemes. This is a common and intuitive strategy in statistics. If a working correlation structure captures the true within-subject dependency more effectively, it tends to produce lower prediction errors.
+
+We will then apply BOOT, BOOT2, and BOOTCV procedures to conduct simulations on the three models.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
