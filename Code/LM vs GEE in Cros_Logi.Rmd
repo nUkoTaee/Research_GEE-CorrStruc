@@ -1,0 +1,293 @@
+---
+title: "Untitled"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+set.seed(123)
+N <- 5000
+
+T_time <- 50
+#take the forced expiratory volume within response (FEV1)
+
+beta <- 2 #as interception
+beta_smoking <- -0.5 #smoking coefficient
+beta_treatment <- 0.3 #
+beta_age <- -0.03
+beta_BMI <- -0.05
+sigma_b <- 1.2 #random effect
+sigma_e <- 1.1 #measurement error
+
+age <- rnorm(N, mean = 50, sd = 10)
+BMI <- rnorm(N, mean = 25, sd = 3)
+
+treatment <- rbinom(N, 1, 0.5)
+
+```
+
+```{r}
+
+
+library(dplyr)
+library(geepack)
+
+set.seed(123) 
+
+# ------------------------------
+# 1. 参数设定
+# ------------------------------
+N_all <- 1000        # Sample size in total
+T_time <- 5          # Five years observation
+sigma_b <- 0.8       # random effects in participants
+sigma_e <- 1.0       # error in measurement 
+
+# beta
+beta0 <- 2.4                 # Intercept
+beta_smoking <- -0.15        #  About 0.15 L in FEV when smoking
+beta_treat <- 0.10           # Treatment applied
+beta_age <- -0.02            # 
+beta_gender <- 0.30          # Male is higher 
+beta_BMI <- -0.03            # 
+beta_weight <- 0.01          # 
+beta_packyears <- -0.02      # Year of smoking
+beta_cigsday <- -0.005       # 
+beta_sbp <- -0.004           # SBP
+#beta_baseFEV1 <- 0.8         # baseline FEV1 效应
+
+# ------------------------------
+# 2. Baseline factors of each participants
+# ------------------------------
+id <- 1:N_all
+age <- rnorm(N_all, mean = 50, sd = 10)
+gender <- rbinom(N_all, 1, 0.5)              # 0=女, 1=男
+BMI <- rnorm(N_all, mean = 25, sd = 3)
+weight <- rnorm(N_all, mean = 70, sd = 10)
+pack_years <- rpois(N_all, lambda = 20)      # 吸烟年数，Poisson(20)做示例
+cigs_per_day <- rpois(N_all, lambda = 15)    # 每日吸烟量，Poisson(15)示例
+sbp <- rnorm(N_all, mean = 120, sd = 15)     # 收缩压
+#baseFEV1 <- rnorm(N_all, mean = 2.3, sd = 0.4) # 基线 FEV1
+treatment <- rbinom(N_all, 1, 0.5)           
+
+#Random effects of participants
+b_i <- rnorm(N_all, mean = 0, sd = sigma_b)
+
+#Baseline factors
+df_subjects <- data.frame(
+  id, age, gender, BMI, weight,
+  pack_years, cigs_per_day, sbp,
+  treatment, b_i
+)
+
+
+dat_all <- data.frame()  
+
+for(i in seq_len(N_all)){
+  for(t in 1:T_time){
+    smoking_it <- rbinom(1, 1, 0.4)# The smoking status, assume 40% of the sample smoke
+    
+    mu <- beta0 +
+          beta_smoking     * smoking_it +
+          beta_treat       * df_subjects$treatment[i] +
+          beta_age         * df_subjects$age[i] +
+          beta_gender      * df_subjects$gender[i] +
+          beta_BMI         * df_subjects$BMI[i] +
+          beta_weight      * df_subjects$weight[i] +
+          beta_packyears   * df_subjects$pack_years[i] +
+          beta_cigsday     * df_subjects$cigs_per_day[i] +
+          beta_sbp         * df_subjects$sbp[i] +
+          #beta_baseFEV1    * df_subjects$baseFEV1[i] +
+          df_subjects$b_i[i]   # Random effect in each participant
+    
+    # Random effect in of each FEV1
+    FEV1_it <- rnorm(1, mean = mu, sd = sigma_e)
+    
+    dat_all <- rbind(dat_all, data.frame(
+      id = i,
+      time = t,
+      smoking = smoking_it,
+      treatment = df_subjects$treatment[i],
+      age = df_subjects$age[i],
+      gender = df_subjects$gender[i],
+      BMI = df_subjects$BMI[i],
+      weight = df_subjects$weight[i],
+      pack_years = df_subjects$pack_years[i],
+      cigs_per_day = df_subjects$cigs_per_day[i],
+      sbp = df_subjects$sbp[i],
+      #baseFEV1 = df_subjects$baseFEV1[i],
+      FEV1 = FEV1_it
+    ))
+  }
+}
+
+dat_all$id <- factor(dat_all$id)
+
+#split into 100, 500, 1000 as in the paper
+dat_100  <- dat_all[dat_all$id %in% 1:100, ]
+dat_500  <- dat_all[dat_all$id %in% 1:500, ]
+dat_1000 <- dat_all[dat_all$id %in% 1:1000, ]
+
+```
+
+```{r}
+dat_all
+#count(dat_all)
+unique(dat_all)
+```
+```{r}
+dat_all[dat_all$time < 4, ]
+```
+
+```{r}
+library(dplyr)
+
+df_year <- dat_all %>% filter(time == 2)
+df_year
+```
+
+A linear regression model was fitted at each of the five visit years with the following covariates: the current-year smoking-status, treatment group and some baseline characteristics (age, gender, body mass index, body weight, smok ing pack-years, cigarettes smoked per day, systolic blood pressure and FEV1). 
+
+it is confirmed that quitting smoking is associated with an increase of FEVi by about 0.09 to 0.19 
+μ = β0 + β1 * smoking + β2 ×treatment + β3×age+β4×BMI+⋯+subject_effect
+
+Average values in healthy patients aged 20-60 range from 4.5 to 3.5 liters in males and from 3.25 to 2.5 liters in females
+Sustained smoking cessation substantially reduces the smoking-related accelerated rate of decline in forced expiratory volume in one second
+
+
+```{r}
+
+cross_sec_res <- function(data_cross_sec){
+  output <- data.frame(
+    Year = integer(), Smoking_est = numeric(), Smoking_se = numeric()
+  )
+  for(t in 1:5){
+    df_year <- data_cross_sec %>% filter(time == t)#t=1,2,3,4,5
+    fit <- lm(FEV1 ~ smoking + treatment + age + gender + BMI +weight +
+                pack_years + cigs_per_day + sbp, data = df_year)
+    
+    est <- coef(summary(fit))["smoking","Estimate"]
+    se  <- coef(summary(fit))["smoking","Std. Error"] #Extract the lm() parameters & coefficient 
+    
+    output <- rbind(output, data.frame(Year=t, Smoking_est=est, Smoking_se=se))
+    print(coef(summary(fit)))
+  }
+  output
+}
+
+cs_res_100 <- cross_sec_res(dat_100)
+cs_res_100
+
+```
+```{r}
+cs_res_500 <- cross_sec_res(dat_500)
+cs_res_500
+cs_res_1000 <- cross_sec_res(dat_1000)
+cs_res_1000
+
+```
+
+
+```{r}
+cbind(cs_res_100, cs_res_500,cs_res_1000)
+```
+
+
+```{r}
+gee_res <- function(data_gee){
+  
+  fit_indep <- geeglm(FEV1 ~ smoking + treatment + age + gender + BMI + weight + pack_years + cigs_per_day + sbp, id = id, data = data_gee, family = gaussian, corstr = "independence")
+  fit_cs <- geeglm(FEV1 ~ smoking + treatment + age + gender + BMI + weight + pack_years + cigs_per_day + sbp, id = id, data = data_gee, family = gaussian, corstr = "exchangeable")
+  fit_ar1 <- geeglm(FEV1 ~ smoking + treatment + age + gender + BMI + weight + pack_years + cigs_per_day + sbp, id = id, data = data_gee, family = gaussian, corstr = "ar1")
+  #print(coef(summary(fit)))
+  extract_coef <- function(fit, value){
+    print(summary(fit)$coefficients)
+    coef <- summary(fit)$coefficients
+    c(Estimate = coef[value, "Estimate"], SE = coef[value, "Std.err"])
+  }
+  
+  smoke_ind <- extract_coef(fit_indep, "smoking")
+  smoke_cs <- extract_coef(fit_cs, "smoking")
+  smoke_ar1 <- extract_coef(fit_ar1, "smoking")
+  
+  output<- data.frame(
+    Model = c("indep", "CS", "AR_1"),
+    Smoking_est = c(smoke_ind["Estimate"], smoke_cs["Estimate"], smoke_ar1["Estimate"] ),
+    Smoking_se = c(smoke_ind["SE"], smoke_cs["SE"], smoke_ar1["SE"] )
+  )
+  output
+}
+
+gee_res_100 <- gee_res(dat_100)
+gee_res_100
+```
+```{r}
+
+gee_res_500 <- gee_res(dat_500)
+gee_res_500
+
+```
+
+```{r}
+gee_res_all <- gee_res(dat_all)
+gee_res_all
+```
+
+```{r}
+
+#Implement PMSE
+pmse_boot <- function(data, indices, corstructure_type) {
+  # indices: bootstrap 
+  subjects <- unique(data$id)
+  boot_subjects <- subjects[indices]
+  # retain one participant
+  boot_data <- data[data$id %in% boot_subjects, ]
+  
+  # 
+  fit <- geeglm(FEV1 ~ smoking + treatment + age + gender + BMI + weight +
+                  pack_years + cigs_per_day + sbp + baseFEV1,
+                id = id, data = boot_data, family = gaussian, corstr = corstructure_type)
+  
+  pred <- predict(fit, newdata = data)
+  # The SE of the error square?
+  se <- (data$FEV1 - pred)^2
+  
+  return(mean(se))
+}
+
+B <- 50
+n_subj <- length(unique(dat_100$id)) 
+get_pmse <- function(corstructure_type, data) {
+  boot_pmse <- replicate(B, {
+    boot_indices <- sample(1:n_subj, n_subj, replace = TRUE)
+    pmse_boot(data, boot_indices, corstr_type)
+  })
+  mean(boot_pmse)
+}
+
+pmse_indp <- get_pmse("independence", dat_100)
+
+
+
+
+print(pmse_results)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

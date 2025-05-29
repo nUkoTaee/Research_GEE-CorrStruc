@@ -1,0 +1,138 @@
+---
+title: "QIC Simulation"
+output: html_document
+date: "2025-04-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(geepack)
+library(MuMIn)
+
+
+# Model 1: Y_it = α * Y_i,t-1 + β * x_it + ε_it, init Y_i0 = 0
+simulate_model1 <- function(N, T, alpha, beta) {
+  sim_data <- data.frame()
+  for (i in 1:N) {
+    Y_prev <- 0
+    for (t in 1:T) {
+      x <- rnorm(1, mean = 0, sd = 1)
+      eps <- rnorm(1, mean = 0, sd = 1)
+      Y_curr <- alpha * Y_prev + beta * x + eps
+      sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y_curr))
+      Y_prev <- Y_curr
+    }
+  }
+  return(sim_data)
+}
+
+
+set.seed(123)
+data <- simulate_model1(N = 100, T = 5, alpha = 0.5, beta = 1)
+
+fm_ind <- geeglm(Y ~ x, id = id, data = data, family = gaussian, 
+                 corstr = "independence", scale.fix = TRUE)
+fm_ex  <- update(fm_ind, corstr = "exchangeable")
+fm_ar1 <- update(fm_ind, corstr = "ar1")
+
+model_comparison <- model.sel(fm_ind, fm_ex, fm_ar1, rank = MuMIn::QIC)
+print(model_comparison)
+
+
+## 3. replicate：using QIC select the correlation
+
+simulate_QIC_model_sel <- function(model_type = c("Model1", "Model2", "Model3"),
+                                   R = 100, N = 100, T = 5, alpha = 0.5, beta_val = 1) {
+  
+  model_type <- match.arg(model_type)
+  
+  # Use model_type to select the model
+  if(model_type == "Model1"){
+    sim_fun <- simulate_model1
+  } else if(model_type == "Model2"){
+    sim_fun <- function(N, T, alpha, beta) {
+      # Model 2: Y_it = Y_i,t-1 * (β * x_it) + ε_it, init Y_i0 = 1, x ~ N(1,1)
+      sim_data <- data.frame()
+      for (i in 1:N) {
+        Y_prev <- 1
+        for (t in 1:T) {
+          x <- rnorm(1, mean = 1, sd = 1)
+          eps <- rnorm(1, mean = 0, sd = 1)
+          Y_curr <- Y_prev * (beta * x) + eps
+          sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y_curr))
+          Y_prev <- Y_curr
+        }
+      }
+      return(sim_data)
+    }
+  } else if(model_type == "Model3"){
+    sim_fun <- function(N, T, alpha, beta) {
+      # Model 3: Y_it = b_i + β * x_it + ε_it, b_i ~ N(0,1)
+      sim_data <- data.frame()
+      b <- rnorm(N, mean = 0, sd = 1)
+      for (i in 1:N) {
+        for (t in 1:T) {
+          x <- rnorm(1, mean = 0, sd = 1)
+          eps <- rnorm(1, mean = 0, sd = 1)
+          Y <- b[i] + beta * x + eps
+          sim_data <- rbind(sim_data, data.frame(id = i, time = t, x = x, Y = Y))
+        }
+      }
+      return(sim_data)
+    }
+  }
+  
+  # Init the counting data frame
+  best_count <- c(Independence = 0, Exchangeable = 0, AR1 = 0)
+  
+  for (r in 1:R) {
+    # Generate the data
+    data <- sim_fun(N, T, alpha, beta_val)
+    
+    fm_ind <- geeglm(Y ~ x, id = id, data = data, family = gaussian, 
+                     corstr = "independence", scale.fix = TRUE)
+    fm_ex  <- update(fm_ind, corstr = "exchangeable")
+    fm_ar1 <- update(fm_ind, corstr = "ar1")
+    
+    mod_sel <- model.sel(fm_ind, fm_ex, fm_ar1, rank = MuMIn::QIC)
+    best_model <- rownames(mod_sel)[1]  # The first row is the minial QIC
+    
+    if(best_model == "fm_ind"){
+      best_count["Independence"] <- best_count["Independence"] + 1
+    } else if(best_model == "fm_ex"){
+      best_count["Exchangeable"] <- best_count["Exchangeable"] + 1
+    } else if(best_model == "fm_ar1"){
+      best_count["AR1"] <- best_count["AR1"] + 1
+    }
+  }
+  
+  return(best_count)
+}
+
+set.seed(123)
+best_structure_Model1 <- simulate_QIC_model_sel(model_type = "Model1", R = 100, N = 100, T = 5,
+                                                alpha = 0.5, beta_val = 1)
+cat("Model 1 - QIC Frequency of the working correlation matrix selected：\n")
+print(best_structure_Model1)
+
+```
+```{r}
+set.seed(123)
+best_structure_Model2 <- simulate_QIC_model_sel(model_type = "Model2", R = 100, N = 100, T = 5,
+                                                alpha = 0.5, beta_val = 1)
+cat("Model 2 - QIC Frequency of the working correlation matrix selected：\n")
+print(best_structure_Model2)
+```
+```{r}
+set.seed(123)
+best_structure_Model3 <- simulate_QIC_model_sel(model_type = "Model3", R = 100, N = 100, T = 5,
+                                                alpha = 0.5, beta_val = 1)
+cat("Model 3 - QIC Frequency of the working correlation matrix selected：\n")
+print(best_structure_Model3)
+```
+
+

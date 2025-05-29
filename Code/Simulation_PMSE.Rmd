@@ -1,0 +1,312 @@
+---
+title: "Simulation_PMSE"
+output: html_document
+date: "2025-04-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(geepack)  
+library(boot)      
+
+set.seed(123)
+
+
+# Model 1: Y_it = alpha * Y_{i,t-1} + beta * x_it + error
+# with initial Y_i0 = 0, x_it ~ N(0,1), and error ~ N(0,1)
+simulate_model1 <- function(N, T, alpha = 0.5, beta = 1) {
+  # Create an empty list 
+  data_list <- list()
+  for (i in 1:N) {
+    Y_prev <- 0  # initial value for subject i
+    for (t in 1:T) {
+      x_it <- rnorm(1, mean = 0, sd = 1)      # covariate time t
+      error_it <- rnorm(1, mean = 0, sd = 1)    # error term
+      Y_it <- alpha * Y_prev + beta * x_it + error_it
+      data_list[[length(data_list) + 1]] <- data.frame(
+        id = i,
+        time = t,
+        x = x_it,
+        Y = Y_it
+      )
+      Y_prev <- Y_it
+    }
+  }
+  data <- do.call(rbind, data_list)
+  return(data)
+}
+
+# Model 2: Y_it = (Y_{i,t-1} * (beta * x_it)) + error
+# with initial Y_i0 = 1, beta = 1, x_it ~ N(1,1), and error ~ N(0,1)
+simulate_model2 <- function(N, T, beta = 1) {
+  data_list <- list()
+  for (i in 1:N) {
+    Y_prev <- 1  # initial value for subject i is 1
+    for (t in 1:T) {
+      x_it <- rnorm(1, mean = 1, sd = 1)      
+      error_it <- rnorm(1, mean = 0, sd = 1)    
+      # Y_it = Y_{i,t-1} * (beta * x_it) + error_it
+      Y_it <- Y_prev * (beta * x_it) + error_it
+      data_list[[length(data_list) + 1]] <- data.frame(
+        id = i,
+        time = t,
+        x = x_it,
+        Y = Y_it
+      )
+      Y_prev <- Y_it
+    }
+  }
+  data <- do.call(rbind, data_list)
+  return(data)
+}
+
+# Model 3: Y_it = b_i + beta * x_it + error
+# where b_i ~ N(0,1); x_it ~ N(0,1) and error ~ N(0,1)
+simulate_model3 <- function(N, T, beta = 1) {
+  data_list <- list()
+  # Simulate random effects for subjects
+  b <- rnorm(N, mean = 0, sd = 1)
+  for (i in 1:N) {
+    for (t in 1:T) {
+      x_it <- rnorm(1, mean = 0, sd = 1)
+      error_it <- rnorm(1, mean = 0, sd = 1)
+      Y_it <- b[i] + beta * x_it + error_it
+      data_list[[length(data_list) + 1]] <- data.frame(
+        id = i,
+        time = t,
+        x = x_it,
+        Y = Y_it
+      )
+    }
+  }
+  data <- do.call(rbind, data_list)
+  return(data)
+}
+
+
+## PMSE Calculation Using Bootstrap
+
+
+pmse_boot <- function(data, indices, cor_str) {
+  # Get unique subject ID
+  subjects <- unique(data$id)
+  # Select the bootstrap sample of subjects (with replacement)
+  boot_subjects <- subjects[indices]
+  # Subset the data for these subjects
+  boot_data <- data[data$id %in% boot_subjects, ]
+  # Fit the GEE model on the bootstrap sample using the specified correlation structure.
+  fit <- geeglm(Y ~ x, id = id, data = boot_data, family = gaussian, corstr = cor_str)
+  # Predict on the original (full) data set
+  pred <- predict(fit, newdata = data)
+  # Compute the squared error for each observations
+  sq_error <- (data$Y - pred)^2
+  # Return the mean squared error
+  return(mean(sq_error))
+}
+
+# the bootstrap-estimated PMSE for a given correlation structure.
+get_pmse <- function(data, cor_str, B = 50) {
+  n_subj <- length(unique(data$id))
+  pmse_vals <- replicate(B, {
+    # Sample subject indices with replacement
+    boot_indices <- sample(1:n_subj, n_subj, replace = TRUE)
+    pmse_boot(data, boot_indices, cor_str)
+  })
+  return(mean(pmse_vals))
+}
+
+
+
+# working correlation structures listing
+candidate_structures <- c("independence", "exchangeable", "ar1")
+
+
+# Choose simulation parameters:
+N <- 100    # number of size 
+T <- 5      # number of time points
+
+
+data_m1 <- simulate_model1(N = N, T = T, alpha = 0.5, beta = 1)
+pmse_m1 <- sapply(candidate_structures, function(struc) get_pmse(data_m1, struc, B = 50))
+cat("Model 1 PMSE estimates:\n")
+print(pmse_m1)
+
+data_m2 <- simulate_model2(N = N, T = T, beta = 1)
+pmse_m2 <- sapply(candidate_structures, function(struc) get_pmse(data_m2, struc, B = 50))
+cat("Model 2 PMSE estimates:\n")
+print(pmse_m2)
+
+data_m3 <- simulate_model3(N = N, T = T, beta = 1)
+pmse_m3 <- sapply(candidate_structures, function(struc) get_pmse(data_m3, struc, B = 50))
+cat("Model 3 PMSE estimates:\n")
+print(pmse_m3)
+
+
+
+compute_full_MSE <- function(data, cor_str) {
+  fit <- geeglm(Y ~ x, id = id, data = data, family = gaussian, corstr = cor_str)
+  pred <- predict(fit, newdata = data)
+  return(mean((data$Y - pred)^2))
+}
+
+mse_m1 <- sapply(candidate_structures, function(struc) compute_full_MSE(data_m1, struc))
+cat("Model 1 full-data MSEs:\n")
+print(mse_m1)
+
+mse_m2 <- sapply(candidate_structures, function(struc) compute_full_MSE(data_m2, struc))
+cat("Model 2 full-data MSEs:\n")
+print(mse_m2)
+
+mse_m3 <- sapply(candidate_structures, function(struc) compute_full_MSE(data_m3, struc))
+cat("Model 3 full-data MSEs:\n")
+print(mse_m3)
+
+```
+
+```{r}
+
+set.seed(123)
+
+
+# Model 1: Y_it = alpha * Y_{i,t-1} + beta * x_it + error,
+# with initial Y_i0 = 0, x_it ~ N(0,1), and error ~ N(0,1)
+simulate_model1 <- function(N, T, alpha = 0.5, beta = 1) {
+  data_list <- list()
+  for (i in 1:N) {
+    Y_prev <- 0  # initial value for subject i
+    for (t in 1:T) {
+      x_it <- rnorm(1, mean = 0, sd = 1)      # covariate at time t
+      error_it <- rnorm(1, mean = 0, sd = 1)    # error term
+      Y_it <- alpha * Y_prev + beta * x_it + error_it
+      data_list[[length(data_list) + 1]] <- data.frame(
+        id = i,
+        time = t,
+        x = x_it,
+        Y = Y_it
+      )
+      Y_prev <- Y_it
+    }
+  }
+  data <- do.call(rbind, data_list)
+  return(data)
+}
+
+# 2. PMSE Calculation Using Bootstrapping 
+
+
+pmse_boot <- function(data, indices, cor_str) {
+  subjects <- unique(data$id)
+  boot_subjects <- subjects[indices]  # select subjects with replacement
+  boot_data <- data[data$id %in% boot_subjects, ]  # subset preserving within-subject structure
+  
+  fit <- geeglm(Y ~ x, id = id, data = boot_data, family = gaussian, corstr = cor_str)
+  
+  pred <- predict(fit, newdata = data)
+  
+  # Compute the squared errors and return their mean 
+  return(mean((data$Y - pred)^2))
+}
+
+# Function to compute the PMSE for a given correlation structure using B bootstrap replications.
+get_pmse <- function(data, cor_str, B = 25) {
+  n_subj <- length(unique(data$id))
+  pmse_vals <- replicate(B, {
+    boot_indices <- sample(1:n_subj, n_subj, replace = TRUE)
+    pmse_boot(data, boot_indices, cor_str)
+  })
+  return(mean(pmse_vals))
+}
+
+# working correlation structures listing.
+candidate_structures <- c("independence", "exchangeable", "ar1")
+
+
+N <- 100    # number of size 
+T <- 5      # number of time points
+reps <- 100 # number of replications
+
+# Vector to record the selected structure in each replication for Model 1.
+selected_structure_m1 <- character(reps)
+
+# Repeat the experiment reps times for Model 1.
+for (i in 1:reps) {
+  
+  data_m1 <- simulate_model1(N = N, T = T, alpha = 0.5, beta = 1)
+  
+  # Compute PMSE for each candidate structure using bootstrap 
+  pmse_values <- sapply(candidate_structures, function(struc) get_pmse(data_m1, struc, B = 25))
+  
+  # Select the correlation structure with the minimal PMSE.
+  selected_structure_m1[i] <- names(pmse_values)[which.min(pmse_values)]
+}
+
+cat("Frequency of selected working correlation structure for Model 1 over", reps, "replications:\n")
+print(table(selected_structure_m1))
+
+
+# For Model 2: Y_it = Y_{i,t-1} * (beta * x_it) + error, initial Y = 1, x ~ N(1,1)
+simulate_model2 <- function(N, T, beta = 1) {
+  data_list <- list()
+  for (i in 1:N) {
+    Y_prev <- 1  # initial as 1
+    for (t in 1:T) {
+      x_it <- rnorm(1, mean = 1, sd = 1)
+      error_it <- rnorm(1, mean = 0, sd = 1)
+      Y_it <- Y_prev * (beta * x_it) + error_it
+      data_list[[length(data_list) + 1]] <- data.frame(
+        id = i,
+        time = t,
+        x = x_it,
+        Y = Y_it
+      )
+      Y_prev <- Y_it
+    }
+  }
+  data <- do.call(rbind, data_list)
+  return(data)
+}
+
+selected_structure_m2 <- character(reps)
+for (i in 1:reps) {
+  data_m2 <- simulate_model2(N = N, T = T, beta = 1)
+  pmse_values <- sapply(candidate_structures, function(struc) get_pmse(data_m2, struc, B = 25))
+  selected_structure_m2[i] <- names(pmse_values)[which.min(pmse_values)]
+}
+cat("Frequency of selected working correlation structure for Model 2 over", reps, "replications:\n")
+print(table(selected_structure_m2))
+
+# For Model 3: Y_it = b_i + beta * x_it + error, where b_i ~ N(0,1)
+simulate_model3 <- function(N, T, beta = 1) {
+  data_list <- list()
+  b <- rnorm(N, mean = 0, sd = 1)
+  for (i in 1:N) {
+    for (t in 1:T) {
+      x_it <- rnorm(1, mean = 0, sd = 1)
+      error_it <- rnorm(1, mean = 0, sd = 1)
+      Y_it <- b[i] + beta * x_it + error_it
+      data_list[[length(data_list) + 1]] <- data.frame(
+        id = i,
+        time = t,
+        x = x_it,
+        Y = Y_it
+      )
+    }
+  }
+  data <- do.call(rbind, data_list)
+  return(data)
+}
+
+selected_structure_m3 <- character(reps)
+for (i in 1:reps) {
+  data_m3 <- simulate_model3(N = N, T = T, beta = 1)
+  pmse_values <- sapply(candidate_structures, function(struc) get_pmse(data_m3, struc, B = 25))
+  selected_structure_m3[i] <- names(pmse_values)[which.min(pmse_values)]
+}
+cat("Frequency of selected working correlation structure for Model 3 over", reps, "replications:\n")
+print(table(selected_structure_m3))
+
+```
+

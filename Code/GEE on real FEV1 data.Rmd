@@ -1,0 +1,137 @@
+---
+title: "GEE on real FEV1 data"
+output: html_document
+date: "2025-04-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#—— 1. 准备 ——#
+library(dplyr)
+library(geepack)
+
+# 读入数据
+dat <- read.csv("fev1.csv", stringsAsFactors = FALSE)
+
+# 转 ID 为因子
+dat$ID <- factor(dat$ID)
+#dat$ID    <- factor(dat$ID)      # 必须是 factor
+dat$visit <- ave(dat$AGE, dat$ID, FUN = rank)  # 或用你自己的访视序号
+# 只保留每个 ID 至少 2 次测量的
+dat2 <- dat %>%
+  group_by(ID) %>%
+  filter(n() >= 2) %>%
+  ungroup()
+
+#—— 2. 拟合 GEE ——#
+# 我这里演示三个常见结构：Independence、Exchangeable、AR-1
+fit_ind  <- geeglm(LOGFEV1 ~ HT + AGE,
+                   id = ID, data = dat2,
+                   family = gaussian,
+                   corstr = "independence")
+
+fit_cs   <- geeglm(LOGFEV1 ~ HT + AGE,
+                   id = ID, data = dat2,
+                   family = gaussian,
+                   corstr = "exchangeable")
+
+fit_ar1  <- geeglm(LOGFEV1 ~ HT + AGE,
+                   id = ID, data = dat2,
+                   family = gaussian,
+                   corstr = "ar1")
+
+#—— 3. 看结果 ——#
+summary(fit_ind)
+```
+
+
+```{r}
+summary(fit_cs)
+```
+
+
+```{r}
+summary(fit_ar1)
+
+```
+
+
+```{r}
+set.seed(2025)
+
+B   <- 1000                        # 重复次数
+p   <- 0.7                        # 训练集比例
+rss <- data.frame(ind = numeric(B),
+                  cs  = numeric(B),
+                  ar1 = numeric(B))
+
+for (b in 1:B) {
+  idx  <- sample(seq_len(nrow(dat2)), size = floor(p*nrow(dat2)))
+  train<- dat2[idx, ]
+  test <- dat2[-idx, ]
+
+  # 拟合三种结构
+  fi <- geeglm(LOGFEV1 ~ HT + AGE, id = ID,
+               data = train, family = gaussian, corstr = "independence")
+  fc <- geeglm(LOGFEV1 ~ HT + AGE, id = ID,
+               data = train, family = gaussian, corstr = "exchangeable")
+  fa <- geeglm(LOGFEV1 ~ HT + AGE, id = ID, waves = visit,
+               data = train, family = gaussian, corstr = "ar1")
+
+  # 预测
+  rss[b, "ind"] <- mean((test$LOGFEV1 - predict(fi, newdata = test))^2)
+  rss[b, "cs" ] <- mean((test$LOGFEV1 - predict(fc, newdata = test))^2)
+  rss[b, "ar1"] <- mean((test$LOGFEV1 - predict(fa, newdata = test))^2)
+}
+
+colMeans(rss, na.rm = TRUE)      # 平均 PMSE
+apply(rss, 2, function(x) mean(rank(x, ties.method="min")==1, na.rm = TRUE))
+
+```
+```{r}
+library(geepack)
+set.seed(2025)
+
+dat <- read.csv("fev1.csv")        
+names(dat) <- toupper(names(dat))            
+dat$ID   <- factor(dat$ID)
+
+## 
+dat <- dat[order(dat$ID, dat$AGE), ]
+dat$TIME <- ave(dat$ID, dat$ID, FUN = seq_along)
+
+print(head(dat))
+
+
+pmse_once <- function(data, corstr, ids_boot) {
+  d_boot <- data[data$ID %in% ids_boot, ]                 # Training set
+  fit <- tryCatch(
+    geeglm(LOGFEV1 ~ HT + AGE, id = ID, waves = TIME,
+           data = d_boot, family = gaussian, corstr = corstr,
+           control = geese.control(maxit = 100)),
+    error = function(e) NULL
+  )
+  if (is.null(fit)) return(NA_real_)
+  mean((data$LOGFEV1 - predict(fit, newdata = data))^2)   # Evaluate on the whole set
+}
+
+get_pmse <- function(data, corstr, B = 100) {
+  subj <- unique(data$ID);  n <- length(subj)
+  pmse <- replicate(B, {
+    ids_b <- sample(subj, n, replace = TRUE)
+    pmse_once(data, corstr, ids_b)
+  })
+  mean(pmse, na.rm = TRUE)
+}
+
+
+cand <- c(ind = "independence", cs = "exchangeable", ar1 = "ar1")
+pmse_vec <- sapply(cand, get_pmse, data = dat, B = 100)
+
+cat("Bootstrap-PMSE (B = 100)\n"); print(pmse_vec)
+
+```
+

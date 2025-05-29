@@ -1,0 +1,260 @@
+---
+title: "Untitled"
+output: html_document
+date: "2025-05-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+Below is an example of how to simulate a longitudinal dataset for N, subjects, each measured over T=5 years. We incorporate baseline covariates, a random intercept, and a time-varying smoking status:
+```{r}
+set.seed(123)
+N_all <- 1000
+T_time <- 5
+sigma_b <- 0.8
+sigma_e <- 1.0
+
+# Coefficients
+beta0 <- 2.4
+beta_smoking <- -0.15
+beta_treat <- 0.10
+beta_age <- -0.02
+beta_gender <- 0.30
+beta_BMI <- -0.03
+beta_weight <- 0.01
+beta_packyears <- -0.02
+beta_cigsday <- -0.005
+beta_sbp <- -0.004
+
+# Baseline covariates
+id <- 1:N_all
+age <- rnorm(N_all, mean = 50, sd = 10)
+gender <- rbinom(N_all, 1, 0.5)
+BMI <- rnorm(N_all, mean = 25, sd = 3)
+weight <- rnorm(N_all, mean = 70, sd = 10)
+pack_years <- rpois(N_all, lambda = 20)
+cigs_per_day <- rpois(N_all, lambda = 15)
+sbp <- rnorm(N_all, mean = 120, sd = 15)
+treatment <- rbinom(N_all, 1, 0.5)
+b_i <- rnorm(N_all, mean = 0, sd = sigma_b)
+
+df_subjects <- data.frame(
+  id, age, gender, BMI, weight,
+  pack_years, cigs_per_day, sbp,
+  treatment, b_i
+)
+
+# Repeated measurements
+dat_all <- data.frame()
+
+for (i in seq_len(N_all)) {
+  smoking_vec <- rbinom(T_time, 1, 0.4)  # time-varying smoking status
+  pack_years_it <- df_subjects$pack_years[i]
+  
+  for (t in 1:T_time) {
+    
+    age_it <- df_subjects$age[i] + (t - 1)
+    smoking_it <- smoking_vec[t]
+    
+    # 只有吸烟时才生成吸烟量
+    if (smoking_it == 1) {
+      cigs_day_it <- rpois(1, lambda = df_subjects$cigs_per_day[i])
+      pack_years_it <- pack_years_it + 1
+    } else {
+      cigs_day_it <- 0
+    }
+    
+    BMI_it <- df_subjects$BMI[i] + rnorm(1, 0, 0.3)
+    weight_it <- df_subjects$weight[i] + rnorm(1, 0, 1.0)
+    
+    # Linear predictor
+    mu <- beta0 +
+      beta_smoking   * smoking_it +
+      beta_treat     * df_subjects$treatment[i] +
+      beta_age       * age_it +
+      beta_gender    * df_subjects$gender[i] +
+      beta_BMI       * BMI_it +
+      beta_weight    * weight_it +
+      beta_packyears * pack_years_it +
+      beta_cigsday   * cigs_day_it +
+      beta_sbp       * df_subjects$sbp[i] +
+      df_subjects$b_i[i]
+    
+    FEV1_it <- rnorm(1, mean = mu, sd = sigma_e)
+    
+    dat_all <- rbind(dat_all, data.frame(
+      id = i,
+      time = t,
+      smoking = smoking_it,
+      treatment = df_subjects$treatment[i],
+      age = age_it,
+      gender = df_subjects$gender[i],
+      BMI = BMI_it,
+      weight = weight_it,
+      pack_years = pack_years_it,
+      cigs_per_day = cigs_day_it,
+      sbp = df_subjects$sbp[i],
+      FEV1 = FEV1_it
+    ))
+  }
+}
+
+
+```
+
+```{r}
+dat_all
+```
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# time, treatment, FEV1
+
+# 分组计算每年 FEV1 平均值和标准误
+fev1_grouped <- dat_all %>%
+  group_by(time, treatment) %>%
+  summarise(
+    mean_fev1 = mean(FEV1, na.rm = TRUE),
+    sd_fev1 = sd(FEV1, na.rm = TRUE),
+    n = n(),
+    se_fev1 = sd_fev1 / sqrt(n),
+    .groups = "drop"
+  )
+
+
+ggplot(fev1_grouped, aes(x = time, y = mean_fev1, color = factor(treatment))) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = mean_fev1 - se_fev1, ymax = mean_fev1 + se_fev1, fill = factor(treatment)),
+              alpha = 0.2, color = NA) +
+  scale_color_manual(values = c("0" = "darkred", "1" = "darkgreen"),
+                     labels = c("Control", "Treatment")) +
+  scale_fill_manual(values = c("0" = "red", "1" = "green"),
+                    labels = c("Control", "Treatment")) +
+  labs(
+    title = "FEV1 Trend Over Time by Treatment Group",
+    x = "Time (Years)",
+    y = "FEV1 (Liters)",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Step 1: （treatment-smoking）
+dat_all <- dat_all %>%
+  mutate(group = factor(paste0("Trt", treatment, "_Smk", smoking),
+                        levels = c("Trt0_Smk0", "Trt0_Smk1", "Trt1_Smk0", "Trt1_Smk1"),
+                        labels = c("Control, Non-Smoker", "Control, Smoker",
+                                   "Treatment, Non-Smoker", "Treatment, Smoker")))
+
+fev1_combo_summary <- dat_all %>%
+  group_by(time, group) %>%
+  summarise(
+    mean_fev1 = mean(FEV1, na.rm = TRUE),
+    se_fev1 = sd(FEV1, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  )
+
+
+ggplot(fev1_combo_summary, aes(x = time, y = mean_fev1, color = group, fill = group)) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = mean_fev1 - se_fev1, ymax = mean_fev1 + se_fev1),
+              alpha = 0.2, color = NA) +
+  labs(
+    title = "FEV1 Trends Over Time by Treatment and Smoking Status",
+    x = "Time (Years)",
+    y = "FEV1 (Liters)",
+    color = "Group",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+```{r}
+library(dplyr)
+library(geepack)
+
+# 提取 baseFEV1（baseline：time == 1）
+base_FEV1_df <- dat_all %>%
+  filter(time == 1) %>%
+  select(id, baseFEV1 = FEV1)
+
+dat_all <- dat_all %>%
+  left_join(base_FEV1_df, by = "id")
+# 只使用 baseline 数据（time == 1）
+dat_baseline <- dat_all %>% filter(time == 1)
+
+# Fit the OLS(Cross-Sectional) model
+fit_ols <- lm(FEV1 ~ smoking + treatment + age + gender + BMI + weight +
+                pack_years + cigs_per_day + sbp + baseFEV1,
+              data = dat_baseline)
+
+# 用 OLS 模型预测整个 longitudinal 数据
+dat_all$pred_ols <- predict(fit_ols, newdata = dat_all)
+
+# 计算 OLS 模型的 PMSE
+mse_ols <- mean((dat_all$FEV1 - dat_all$pred_ols)^2)
+
+summary(fit_ols)
+```
+
+```{r}
+# 单次 PMSE bootstrap 函数
+pmse_boot <- function(data, indices, corstr_type) {
+  subjects <- unique(data$id)
+  boot_subjects <- subjects[indices]
+  boot_data <- data[data$id %in% boot_subjects, ]
+  
+  fit <- geeglm(FEV1 ~ smoking + treatment + age + gender + BMI + weight +
+                  pack_years + cigs_per_day + sbp + baseFEV1,
+                id = id, data = boot_data,
+                family = gaussian, corstr = corstr_type)
+  
+  pred <- predict(fit, newdata = data)
+  mean((data$FEV1 - pred)^2)
+}
+set.seed(123)
+B <- 50
+n_subj <- length(unique(dat_all$id))
+
+get_pmse <- function(corstr_type, data) {
+  boot_pmse <- replicate(B, {
+    boot_indices <- sample(1:n_subj, n_subj, replace = TRUE)
+    pmse_boot(data, boot_indices, corstr_type)
+  })
+  mean(boot_pmse)
+}
+
+# 执行 PMSE 评估
+pmse_ind <- get_pmse("independence", dat_all)
+pmse_cs  <- get_pmse("exchangeable", dat_all)
+pmse_ar1 <- get_pmse("ar1", dat_all)
+
+```
+
+```{r}
+pmse_results <- data.frame(
+  Model = c("Cross-Sectional (OLS)", "GEE Independence", "GEE Exchangeable", "GEE AR-1"),
+  Error_Metric = c("MSE", "PMSE", "PMSE", "PMSE"),
+  Score = c(mse_ols, pmse_ind, pmse_cs, pmse_ar1)
+)
+
+print(pmse_results)
+
+best_model <- pmse_results$Model[which.min(pmse_results$Score)]
+cat("Best is：", best_model, "\n")
+
+```
+```{r}
+
+```
+
